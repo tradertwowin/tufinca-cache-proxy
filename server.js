@@ -51,7 +51,8 @@ app.post('/v1/messages', async (req, res) => {
       signal: controller.signal,
     });
     res.status(upstream.status);
-    upstream.headers.forEach((v, k) => { if (k.toLowerCase() !== 'content-encoding') res.setHeader(k, v); });
+    const skipHeaders = ['content-encoding', 'content-length', 'transfer-encoding'];
+upstream.headers.forEach((v, k) => { if (!skipHeaders.includes(k.toLowerCase())) res.setHeader(k, v); });
     upstream.body.pipe(res);
   } catch (fetchError) {
     console.error('[proxy] fallo llamando a Anthropic:', fetchError.message);
