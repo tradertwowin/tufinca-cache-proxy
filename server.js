@@ -1,4 +1,5 @@
 import express from 'express';
+import { Readable } from 'node:stream';
 
 const app = express();
 app.use(express.json({ limit: '10mb' }));
@@ -53,7 +54,7 @@ app.post('/v1/messages', async (req, res) => {
     res.status(upstream.status);
     const skipHeaders = ['content-encoding', 'content-length', 'transfer-encoding'];
 upstream.headers.forEach((v, k) => { if (!skipHeaders.includes(k.toLowerCase())) res.setHeader(k, v); });
-    upstream.body.pipe(res);
+    Readable.fromWeb(upstream.body).pipe(res);
   } catch (fetchError) {
     console.error('[proxy] fallo llamando a Anthropic:', fetchError.message);
     res.status(fetchError.name === 'AbortError' ? 504 : 502).json({
