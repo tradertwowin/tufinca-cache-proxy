@@ -34,12 +34,13 @@ app.post('/v1/messages', async (req, res) => {
     body = originalBody;
   }
 
-  const forwardHeaders = { 'content-type': 'application/json' };
+ const forwardHeaders = { 'content-type': 'application/json' };
   for (const [key, value] of Object.entries(req.headers)) {
     if (key.toLowerCase().startsWith('anthropic-') || key.toLowerCase() === 'x-api-key') {
       forwardHeaders[key] = value;
     }
   }
+  forwardHeaders['anthropic-beta'] = 'extended-cache-ttl-2025-04-11';
 
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 60_000);
