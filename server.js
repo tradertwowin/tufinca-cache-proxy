@@ -54,8 +54,9 @@ app.post('/v1/messages', async (req, res) => {
     });
     res.status(upstream.status);
     const skipHeaders = ['content-encoding', 'content-length', 'transfer-encoding'];
-upstream.headers.forEach((v, k) => { if (!skipHeaders.includes(k.toLowerCase())) res.setHeader(k, v); });
-    Readable.fromWeb(upstream.body).pipe(res);
+    upstream.headers.forEach((v, k) => { if (!skipHeaders.includes(k.toLowerCase())) res.setHeader(k, v); });
+    const responseBuffer = Buffer.from(await upstream.arrayBuffer());
+    res.send(responseBuffer);
   } catch (fetchError) {
     console.error('[proxy] fallo llamando a Anthropic:', fetchError.message);
     res.status(fetchError.name === 'AbortError' ? 504 : 502).json({
