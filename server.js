@@ -24,10 +24,10 @@ app.post('/v1/messages', async (req, res) => {
       console.log('[tools-check]', JSON.stringify(hashTools(body.tools)));
     }
 
-    if (typeof body.system === 'string' && body.system.length > 0) {
-      body.system = [{ type: 'text', text: body.system, cache_control: { type: 'ephemeral' } }];
+   if (typeof body.system === 'string' && body.system.length > 0) {
+      body.system = [{ type: 'text', text: body.system, cache_control: { type: 'ephemeral', ttl: '1h' } }];
     } else if (Array.isArray(body.system) && body.system.length > 0) {
-      body.system[body.system.length - 1].cache_control = { type: 'ephemeral' };
+      body.system[body.system.length - 1].cache_control = { type: 'ephemeral', ttl: '1h' };
     }
   } catch (mutationError) {
     console.error('[proxy] fallo preparando cache_control, reenviando sin cachear:', mutationError);
